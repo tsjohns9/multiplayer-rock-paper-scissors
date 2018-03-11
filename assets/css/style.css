@@ -1,0 +1,19 @@
+* {
+  box-sizing: border-box;
+}
+
+h4 {
+  margin: 0;
+}
+
+.player-container-1,
+.player-container-2 {
+  height: 225px;
+  width: 225px;
+  margin: 0 auto;
+  padding: 75px 0;
+}
+
+.choices {
+  padding: 75px 0;
+}
