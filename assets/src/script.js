@@ -71,12 +71,14 @@ window.onload = function() {
     console.log(childSnapshot.val())
     //sets player 1 name
     if ( childSnapshot.val().user === 1) {
+      numberOfUsers = childSnapshot.val().user;
       document.getElementById('p1').innerText = childSnapshot.val().name;
       console.log(childSnapshot.val())
     }
 
     //sets player 2 name
     if (childSnapshot.val().user === 2) {
+      numberOfUsers = childSnapshot.val().user;
       document.getElementById('p2').innerText = childSnapshot.val().name;
     }
 
