@@ -35,7 +35,8 @@ window.onload = function() {
 
       //stores player 1 in the db
       database.ref('players').push({
-        name: p1Name
+        name: p1Name,
+        user: numberOfUsers
       });
     }
 
@@ -47,9 +48,11 @@ window.onload = function() {
       console.log(p2Name)
       console.log(numberOfUsers)
 
+
       //stores player 2 in the db
       database.ref('players').push({
-        name: p2Name
+        name: p2Name,
+        user: numberOfUsers
       });
 
     }
@@ -63,15 +66,17 @@ window.onload = function() {
     setName(); 
   }
 
-    database.ref('players').on("child_added", function (childSnapshot) {
 
+  database.ref('players').on("child_added", function (childSnapshot) {
+    console.log(childSnapshot.val())
     //sets player 1 name
-    if ( numberOfUsers === 1) {
-      console.log(document.getElementById('p1').innerText = childSnapshot.val().name);
+    if ( childSnapshot.val().user === 1) {
+      document.getElementById('p1').innerText = childSnapshot.val().name;
+      console.log(childSnapshot.val())
     }
 
     //sets player 2 name
-    if (numberOfUsers === 2) {
+    if (childSnapshot.val().user === 2) {
       document.getElementById('p2').innerText = childSnapshot.val().name;
     }
 
