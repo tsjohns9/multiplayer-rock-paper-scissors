@@ -28,7 +28,6 @@
   <div class="container">
     <div class="row text-center">
 
-      <!-- Player 1 -->
       <div class="col-md-4">
         <div class="player-container-1 border border-success mb-3 mb-md-0 rounded-circle">
           <h4 class="mb-2" id="p1">Player 1</h4>
@@ -36,16 +35,14 @@
         </div>
       </div>
 
-      <!-- Choices -->
-      <div class="col-md-4" id="choices-container">
-        <div class="choices d-none">
+      <div class="col-md-4">
+        <div class="choices">
           <button type="button" class="choices-btn btn btn-success" data-choice="rock">Rock</button>
           <button type="button" class="choices-btn btn btn-success" data-choice="paper">Paper</button>
           <button type="button" class="choices-btn btn btn-success" data-choice="scissors">Scissors</button>
         </div>
       </div>
 
-      <!-- Player 2 -->
       <div class="col-md-4">
         <div class="player-container-2 border border-success mb-3 mb-md-0 rounded-circle">
           <h4 class="mb-2" id="p2">Player 2</h4>

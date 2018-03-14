@@ -1,5 +1,4 @@
 window.onload = function() {
-
   // Initialize Firebase
   var config = {
     apiKey: "AIzaSyD1Bp9JkiAS1J1JutbizPWF7_ofCMWsZh8",
@@ -10,19 +9,25 @@ window.onload = function() {
     messagingSenderId: "177104249799"
   };
   firebase.initializeApp(config);
-
   var database = firebase.database();
 
+  // Clear sessionStorage
+  sessionStorage.clear();
+
+  //sets our user info
   var p1Name;
   var p2Name;
   var p1Choice;
   var p2Choice;
   var numberOfUsers = 0;
 
-  //used for the click event on submit button to get user name
+  //possible choices
+  var choices = document.getElementsByClassName('choices-btn');
+
+  //sets each player name, and which user they are. either user 1 or 2
   var setName = function() {
 
-    //tracks how many players we have. Either 1 or 2
+    //for persistence, this will get added to the db, and will then get set with that info
     numberOfUsers++;
 
     //sets player 1
@@ -30,14 +35,15 @@ window.onload = function() {
 
       //gets player 1 input
       p1Name = document.getElementById('user-name').value.trim();
-      console.log(p1Name)
-      console.log(numberOfUsers)
 
       //stores player 1 in the db
       database.ref('players').push({
         name: p1Name,
         user: numberOfUsers
       });
+
+      sessionStorage.setItem('p1CanChoose', true);
+      console.log(sessionStorage.p1CanChoose)
     }
 
     //sets player 2
@@ -45,9 +51,6 @@ window.onload = function() {
 
       //gets player 2 input
       p2Name = document.getElementById('user-name').value.trim();
-      console.log(p2Name)
-      console.log(numberOfUsers)
-
 
       //stores player 2 in the db
       database.ref('players').push({
@@ -55,30 +58,49 @@ window.onload = function() {
         user: numberOfUsers
       });
 
+      if (sessionStorage.p1CanChoose === true) {
+        console.log(document.querySelector('.choices')) //.classList.remove('d-none');
+      }
     }
+
     //clears user input
     document.getElementById('user-name').value = '';
   }
 
   //sets the names of each player
-  document.getElementById('submit-name').onclick = function (e) { 
+  document.getElementById('submit-name').onclick = function(e) { 
     e.preventDefault(); 
     setName(); 
   }
 
+  //will create a click event for each choice
+  // for (i = 0; i < choices.length; i++) {
+  //   choices[i].onclick = function() { console.log(this.textContent) }
+  // }
 
+  //listens for new children on the 'players' node
   database.ref('players').on("child_added", function (childSnapshot) {
     console.log(childSnapshot.val())
+
     //sets player 1 name
-    if ( childSnapshot.val().user === 1) {
+    if (childSnapshot.val().user === 1) {
+
+      //updates variables for persistance
       numberOfUsers = childSnapshot.val().user;
+      p1Name = childSnapshot.val().name;
+
+      //updates page with user1 name
       document.getElementById('p1').innerText = childSnapshot.val().name;
-      console.log(childSnapshot.val())
     }
 
     //sets player 2 name
     if (childSnapshot.val().user === 2) {
+
+      //updates variables for persistance
       numberOfUsers = childSnapshot.val().user;
+      p2Name = childSnapshot.val().name;
+
+      //updates page with user1 name
       document.getElementById('p2').innerText = childSnapshot.val().name;
     }
 
@@ -86,8 +108,5 @@ window.onload = function() {
 
   });
 
-  // database.ref().once("value")
-  //   .then((snapshot) => {
-  //     document.getElementById('p1').innerText = snapshot.child("players/player1/name").val();
-  //   });
+
 }
