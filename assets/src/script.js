@@ -42,8 +42,11 @@ window.onload = function() {
         user: numberOfUsers
       });
 
+      //reveals the choices once the player is set
       sessionStorage.setItem('p1CanChoose', true);
-      console.log(sessionStorage.p1CanChoose)
+      if (sessionStorage.p1CanChoose) {
+        document.querySelector('.choices').classList.remove('d-none');
+      }
     }
 
     //sets player 2
@@ -58,8 +61,10 @@ window.onload = function() {
         user: numberOfUsers
       });
 
-      if (sessionStorage.p1CanChoose === true) {
-        console.log(document.querySelector('.choices')) //.classList.remove('d-none');
+      //reveals the choices once the player is set
+      sessionStorage.setItem('p2CanChoose', true);
+      if (sessionStorage.p2CanChoose) {
+        document.querySelector('.choices').classList.remove('d-none');
       }
     }
 
@@ -87,7 +92,6 @@ window.onload = function() {
 
       //updates variables for persistance
       numberOfUsers = childSnapshot.val().user;
-      p1Name = childSnapshot.val().name;
 
       //updates page with user1 name
       document.getElementById('p1').innerText = childSnapshot.val().name;
@@ -98,7 +102,6 @@ window.onload = function() {
 
       //updates variables for persistance
       numberOfUsers = childSnapshot.val().user;
-      p2Name = childSnapshot.val().name;
 
       //updates page with user1 name
       document.getElementById('p2').innerText = childSnapshot.val().name;
