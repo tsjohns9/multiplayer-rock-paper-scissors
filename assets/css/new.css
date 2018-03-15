@@ -23,6 +23,15 @@ h4 {
   padding: 75px 0;
 }
 
+.fa {
+  font-size: 75px;
+  margin-right: 40px
+}
+
+.fa-hand-scissors-o {
+  margin-right: 0;
+}
+
 /* .vertical-center {
   align-items: center;
   min-height: 100%;

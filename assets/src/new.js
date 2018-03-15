@@ -21,6 +21,8 @@ window.onload = function() {
   var p2Choice;
   var numberOfUsers = 0;
 
+  // var turnNode = database.ref('turn');
+
   //sets each player name, and which user they are. either user 1 or 2
   var setName = function() {
     var currentName = document.getElementById('user-name').value.trim();
@@ -40,7 +42,7 @@ window.onload = function() {
 
       // adds item to local storage to adjust p1 display
       sessionStorage.setItem('name', currentName);
-      if (sessionStorage.length > 0) {
+      if (sessionStorage.length === 1) {
         //reveals waiting for opponent
         document.querySelector('.waiting-for-opponent-h2').classList.remove('d-none');
         //hides form
@@ -52,10 +54,6 @@ window.onload = function() {
 
     //sets player 2
     if (numberOfUsers === 2) {
-
-      //gets player 2 input
-      // p2Name = currentName
-
       //stores player 2 in the db by specifying the path. Calls set at that path to define our key/value pairs
       var playersChild2 = database.ref('players/p2')
       playersChild2.set({
@@ -66,7 +64,7 @@ window.onload = function() {
 
       // sets p2 display after submitting name
       sessionStorage.setItem('name', p2Name);
-      if (sessionStorage.length > 0) {
+      if (sessionStorage.length === 1) {
         //reveals waiting for opponent
         document.querySelector('.waiting-for-opponent-h2').classList.remove('d-none');
         //hides form
@@ -121,13 +119,22 @@ window.onload = function() {
 
       //sets the opponent for each player
       database.ref('players/p1/opponent').set(p2Name);
-      database.ref('players/p2/opponent').set(p1Name)
+      database.ref('players/p2/opponent').set(p1Name);
+
+      //removes waiting message for p1
+      document.querySelector('.waiting-for-opponent-h2').classList.add('d-none');
+
+      //reveals p1 choices somehow...
+      if (sessionStorage.length === 1) {
+        document.getElementById('choices-container').classList.remove('d-none');
+      }
+      
+
     }
 
-    }, function(error) {
+    }, function(error) {});
 
-  });
 
   //clears the database on disconnect
-  database.ref().set(false)
+  database.ref().set(false);
 }
