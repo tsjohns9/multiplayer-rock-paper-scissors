@@ -21,31 +21,32 @@ window.onload = function() {
   var p2Choice;
   var numberOfUsers = 0;
 
-  //possible choices
-  var choices = document.getElementsByClassName('choices-btn');
-
   //sets each player name, and which user they are. either user 1 or 2
   var setName = function() {
-
+    var currentName = document.getElementById('user-name').value.trim();
     //for persistence, this will get added to the db, and will then get set with that info
     numberOfUsers++;
 
     //sets player 1
     if (numberOfUsers === 1) {
 
-      //gets player 1 input
-      p1Name = document.getElementById('user-name').value.trim();
-
-      //stores player 1 in the db
-      database.ref('players').push({
-        name: p1Name,
-        user: numberOfUsers
+      //stores player 1 in the db by specifying the path. Calls set at that path to define our key/value pairs
+      var playersChild1 = database.ref('players/p1')
+      playersChild1.set({
+        name: currentName,
+        user: numberOfUsers,
+        opponent: ''
       });
 
-      //reveals the choices once the player is set
-      sessionStorage.setItem('p1CanChoose', true);
-      if (sessionStorage.p1CanChoose) {
-        document.querySelector('.choices').classList.remove('d-none');
+      // adds item to local storage to adjust p1 display
+      sessionStorage.setItem('name', currentName);
+      if (sessionStorage.length > 0) {
+        //reveals waiting for opponent
+        document.querySelector('.waiting-for-opponent-h2').classList.remove('d-none');
+        //hides form
+        document.querySelector('.form-container').classList.add('d-none');
+        //reveals p1 circle
+        document.querySelector('.p1-container').classList.remove('d-none');
       }
     }
 
@@ -53,18 +54,25 @@ window.onload = function() {
     if (numberOfUsers === 2) {
 
       //gets player 2 input
-      p2Name = document.getElementById('user-name').value.trim();
+      // p2Name = currentName
 
-      //stores player 2 in the db
-      database.ref('players').push({
-        name: p2Name,
-        user: numberOfUsers
+      //stores player 2 in the db by specifying the path. Calls set at that path to define our key/value pairs
+      var playersChild2 = database.ref('players/p2')
+      playersChild2.set({
+        name: currentName,
+        user: numberOfUsers,
+        opponent: ''
       });
 
-      //reveals the choices once the player is set
-      sessionStorage.setItem('p2CanChoose', true);
-      if (sessionStorage.p2CanChoose) {
-        document.querySelector('.choices').classList.remove('d-none');
+      // sets p2 display after submitting name
+      sessionStorage.setItem('name', p2Name);
+      if (sessionStorage.length > 0) {
+        //reveals waiting for opponent
+        document.querySelector('.waiting-for-opponent-h2').classList.remove('d-none');
+        //hides form
+        document.querySelector('.form-container').classList.add('d-none');
+        //reveals p2 circle
+        document.querySelector('.p2-container').classList.remove('d-none');
       }
     }
 
@@ -85,13 +93,15 @@ window.onload = function() {
 
   //listens for new children on the 'players' node
   database.ref('players').on("child_added", function (childSnapshot) {
-    console.log(childSnapshot.val())
 
     //sets player 1 name
     if (childSnapshot.val().user === 1) {
 
       //updates variables for persistance
       numberOfUsers = childSnapshot.val().user;
+
+      //pulls name out for persistance
+      p1Name = childSnapshot.val().name;
 
       //updates page with user1 name
       document.getElementById('p1').innerText = childSnapshot.val().name;
@@ -105,6 +115,13 @@ window.onload = function() {
 
       //updates page with user1 name
       document.getElementById('p2').innerText = childSnapshot.val().name;
+
+      //pulls name out for persistance
+      p2Name = childSnapshot.val().name;
+
+      //sets the opponent for each player
+      database.ref('players/p1/opponent').set(p2Name);
+      database.ref('players/p2/opponent').set(p1Name)
     }
 
     }, function(error) {
