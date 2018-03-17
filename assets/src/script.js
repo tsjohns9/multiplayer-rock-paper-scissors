@@ -21,8 +21,18 @@ window.onload = function() {
   var p2Choice;
   var numberOfUsers = 0;
 
+  //selects h2 that reveals waiting message
+  var waitingMsg = document.querySelector('.waiting-for-opponent-h2');
+
+  //selects choices container
+  var choicesDiv = document.querySelector('.choices-container')
+
   //used to create click event for each choice
   var choices = document.getElementsByClassName('fa');
+
+  //selects player circles
+  var p1Circle = document.querySelector('.p1-container');
+  var p2Circle = document.querySelector('.p2-container');
 
   //used for the click event to get the user choice
   //elem is going to be the 'this' value of element it is attached to.
@@ -41,8 +51,6 @@ window.onload = function() {
         //sets p1 choice by checking p1.name with sessionStorage.name
         if (snapshot.child('p1').val().name === sessionStorage.name) {
 
-          database.ref('turn').set(2);
-
           //appends the clone we made to the p1 circle
           document.querySelector('.player-container-1').appendChild(choice);
 
@@ -53,15 +61,17 @@ window.onload = function() {
           database.ref('players/p1').update({ choice: p1Choice});
 
           //hides choices for p1.
-          document.querySelector('.choices-container').classList.add('d-none');
+          choicesDiv.classList.add('d-none');
 
           //shows waiting message
-          document.querySelector('.waiting-for-opponent-h2').classList.remove('d-none');
+          waitingMsg.classList.remove('d-none');
+
+          database.ref('turn').set(2);
 
           //if the first condition wasn't met, then it is player 2's choice
         } else {
 
-          database.ref('turn').set(1);
+          // database.ref('turn').set(1);
 
           //appends to p2 circle
           document.querySelector('.player-container-2').appendChild(choice);
@@ -73,26 +83,41 @@ window.onload = function() {
           database.ref('players/p2').update({ choice: p2Choice })
 
           //hides choices for p2.
-          document.querySelector('.choices-container').classList.add('d-none');
+          choicesDiv.classList.add('d-none');
 
           //hides waiting message
-          document.querySelector('.waiting-for-opponent-h2').classList.add('d-none');
+          waitingMsg.classList.add('d-none');
+
+          database.ref().child('turn').set(1)
 
         }
       });
   };
 
   database.ref('turn').on('value', function(snapshot) {
+    
+    // reveals both opponents, their choices, and the winner
+    if (snapshot.val() === 1) {
+      if (sessionStorage.name === p1Name) {
+        waitingMsg.classList.add('d-none');
+        p2Circle.classList.remove('d-none');
+      } else {
+        p1Circle.classList.remove('d-none');
+      }
+
+    }
 
     //reveals choices for p2 when it is their turn
     if (snapshot.val() === 2 && sessionStorage.name === p2Name) {
-      document.querySelector('.choices-container').classList.remove('d-none');
+      console.log('hi')
+      choicesDiv.classList.remove('d-none');
       
-      //shows waiting message
-      document.querySelector('.waiting-for-opponent-h2').classList.add('d-none');
+      //hides waiting message
+      waitingMsg.classList.add('d-none');
+
     }
 
-    if ()
+    
   }, function(error) {})
 
   //will create a click event for each choice using the function declared above
@@ -123,11 +148,11 @@ window.onload = function() {
       sessionStorage.setItem('name', currentName);
       if (sessionStorage.length === 1) {
         //reveals waiting for opponent
-        document.querySelector('.waiting-for-opponent-h2').classList.remove('d-none');
+        waitingMsg.classList.remove('d-none');
         //hides form
         document.querySelector('.form-container').classList.add('d-none');
         //reveals p1 circle
-        document.querySelector('.p1-container').classList.remove('d-none');
+        p1Circle.classList.remove('d-none');
       }
     }
 
@@ -145,13 +170,13 @@ window.onload = function() {
       if (sessionStorage.length === 1) {
 
         //reveals waiting for opponent
-        document.querySelector('.waiting-for-opponent-h2').classList.remove('d-none');
+        waitingMsg.classList.remove('d-none');
 
         //hides form
         document.querySelector('.form-container').classList.add('d-none');
 
         //reveals p2 circle
-        document.querySelector('.p2-container').classList.remove('d-none');
+        p2Circle.classList.remove('d-none');
       }
     }
 
@@ -198,14 +223,14 @@ window.onload = function() {
       database.ref('players/p2').update({opponent: p1Name});
 
       //removes waiting message for p1
-      document.querySelector('.waiting-for-opponent-h2').classList.add('d-none');
+      waitingMsg.classList.add('d-none');
 
       //creates a new child off root for the current turn. Once p2 enters name, it is now p1 turn
-      database.ref().child('turn').set(1)
+      // database.ref().child('turn').set(1)
 
       //reveals p1 choices somehow...
       if (sessionStorage.length === 1) {
-        document.querySelector('.choices-container').classList.remove('d-none');
+        choicesDiv.classList.remove('d-none');
       }
     }
 
