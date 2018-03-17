@@ -94,16 +94,35 @@ window.onload = function() {
       });
   };
 
+  //checks which turn is active
   database.ref('turn').on('value', function(snapshot) {
     
-    // reveals both opponents, their choices, and the winner
+    // If the turn is equal to 1, then both players made a choice, and the round is over. reveals the opponents
     if (snapshot.val() === 1) {
+
+      //adjusts screen for p1 by checking the name in sessionStorage. Switches from 12 column layout to 4 column layout
       if (sessionStorage.name === p1Name) {
         waitingMsg.classList.add('d-none');
-        p2Circle.classList.remove('d-none');
+
+        //reveals p2, and adjusts display
+        p2Circle.classList.remove('d-none', 'col-md-12');
+        p2Circle.classList.add('col-md-4');
+        
+        //adjusts p1 display
+        p1Circle.classList.remove('col-md-12');
+        p1Circle.classList.add('col-md-4');
       } else {
-        p1Circle.classList.remove('d-none');
+        //reveals p2, and adjusts display
+        p1Circle.classList.remove('d-none', 'col-md-12');
+        p1Circle.classList.add('col-md-4');
+
+        //adjusts p1 display
+        p2Circle.classList.remove('col-md-12');
+        p2Circle.classList.add('col-md-4');
       }
+
+      //reveals results for both players
+      document.querySelector('.results').classList.remove('d-none')
 
     }
 
