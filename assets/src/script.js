@@ -39,7 +39,9 @@ window.onload = function() {
       .then((snapshot) => {
 
         //sets p1 choice by checking p1.name with sessionStorage.name
-        if (snapshot.val().p1.name === sessionStorage.name) {
+        if (snapshot.child('p1').val().name === sessionStorage.name) {
+
+          database.ref('turn').set(2);
 
           //appends the clone we made to the p1 circle
           document.querySelector('.player-container-1').appendChild(choice);
@@ -53,8 +55,13 @@ window.onload = function() {
           //hides choices for p1.
           document.querySelector('.choices-container').classList.add('d-none');
 
+          //shows waiting message
+          document.querySelector('.waiting-for-opponent-h2').classList.remove('d-none');
+
           //if the first condition wasn't met, then it is player 2's choice
         } else {
+
+          database.ref('turn').set(1);
 
           //appends to p2 circle
           document.querySelector('.player-container-2').appendChild(choice);
@@ -64,9 +71,29 @@ window.onload = function() {
 
           //sets the choice to the db for p2
           database.ref('players/p2').update({ choice: p2Choice })
+
+          //hides choices for p2.
+          document.querySelector('.choices-container').classList.add('d-none');
+
+          //hides waiting message
+          document.querySelector('.waiting-for-opponent-h2').classList.add('d-none');
+
         }
       });
   };
+
+  database.ref('turn').on('value', function(snapshot) {
+
+    //reveals choices for p2 when it is their turn
+    if (snapshot.val() === 2 && sessionStorage.name === p2Name) {
+      document.querySelector('.choices-container').classList.remove('d-none');
+      
+      //shows waiting message
+      document.querySelector('.waiting-for-opponent-h2').classList.add('d-none');
+    }
+
+    if ()
+  }, function(error) {})
 
   //will create a click event for each choice using the function declared above
   for (i = 0; i < choices.length; i++) {
@@ -86,7 +113,7 @@ window.onload = function() {
     if (numberOfUsers === 1) {
 
       //stores player 1 in the db by specifying the path. Calls set at that path to define our key/value pairs
-      var playersChild1 = database.ref('players/p1')
+      var playersChild1 = database.ref('players/p1');
       playersChild1.set({
         name: currentName,
         user: numberOfUsers,
@@ -173,6 +200,9 @@ window.onload = function() {
       //removes waiting message for p1
       document.querySelector('.waiting-for-opponent-h2').classList.add('d-none');
 
+      //creates a new child off root for the current turn. Once p2 enters name, it is now p1 turn
+      database.ref().child('turn').set(1)
+
       //reveals p1 choices somehow...
       if (sessionStorage.length === 1) {
         document.querySelector('.choices-container').classList.remove('d-none');
@@ -183,4 +213,5 @@ window.onload = function() {
 
   //clears the database on disconnect
   database.ref().set(false);
+
 }
