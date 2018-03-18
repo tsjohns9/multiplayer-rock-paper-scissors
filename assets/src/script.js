@@ -1,12 +1,12 @@
 window.onload = function() {
   // Initialize Firebase
   var config = {
-    apiKey: "AIzaSyD1Bp9JkiAS1J1JutbizPWF7_ofCMWsZh8",
-    authDomain: "rps-multiplayer-80838.firebaseapp.com",
-    databaseURL: "https://rps-multiplayer-80838.firebaseio.com",
-    projectId: "rps-multiplayer-80838",
-    storageBucket: "rps-multiplayer-80838.appspot.com",
-    messagingSenderId: "177104249799"
+    apiKey: "AIzaSyA16uL7SDVX7lUfOSXPNV66dxw3oYrDzRs",
+    authDomain: "rps-1-e782d.firebaseapp.com",
+    databaseURL: "https://rps-1-e782d.firebaseio.com",
+    projectId: "rps-1-e782d",
+    storageBucket: "rps-1-e782d.appspot.com",
+    messagingSenderId: "962051868401"
   };
   firebase.initializeApp(config);
   var database = firebase.database();
@@ -14,261 +14,268 @@ window.onload = function() {
   // Clear sessionStorage
   sessionStorage.clear();
 
-  //sets our user info
-  var p1Name;
-  var p2Name;
-  var p1Choice;
-  var p2Choice;
-  var numberOfUsers = 0;
+  var totalUsers = 0;
+  var turn = 0;
 
+  //there will be a listener to check for updates to each player object in firebase, and will update these variables each time there is a change for easy access
   var p1Obj;
   var p2Obj;
 
-  //selects h2 that reveals waiting message
+  //results
+  var p1Wins = 0;
+  var p1Losses = 0;
+  var p2Wins = 0;
+  var p2Losses = 0;
+  var ties = 0;
+
+  //selects elements from the DOM for easy access
   var waitingMsg = document.querySelector('.waiting-for-opponent-h2');
-
-  //selects choices container
-  var choicesDiv = document.querySelector('.choices-container');
-
-  //used to create click event for each choice
-  var choices = document.getElementsByClassName('fa');
-
-  //selects player circles
   var p1Circle = document.querySelector('.p1-container');
   var p2Circle = document.querySelector('.p2-container');
+  var resultsDiv = document.querySelector('.results');
+  var choicesDiv = document.querySelector('.choices-container');
+  var faIcons = document.getElementsByClassName('fa');
 
-  //used for the click event to get the user choice
-  //elem is going to be the 'this' value of element it is attached to.
-  var addChoice = function(elem) {
+  //determines results of the round
+  function rps(p1Choice, p2Choice) {
+    if ((p1Choice === "rock") && (p2Choice === "scissors")) {
+      p1Wins++;
+      p2Losses++;
+      database.ref('players/p1').update({ wins: p1Wins });
+      database.ref('players/p2').update({ losses: p2Losses });
+    } else if ((p1Choice === "rock") && (p2Choice === "paper")) {
+      p1Losses++;
+      p2Wins++;
+      database.ref('players/p1').update({ losses: p1Losses });
+      database.ref('players/p2').update({ losses: p2Wins });
+    } else if ((p1Choice === "scissors") && (p2Choice === "rock")) {
+      p1Losses++;
+      p2Wins++;
+      database.ref('players/p1').update({ losses: p1Losses });
+      database.ref('players/p2').update({ losses: p2Wins });
+    } else if ((p1Choice === "scissors") && (p2Choice === "paper")) {
+      p1Wins++;
+      p2Losses++;
+      database.ref('players/p1').update({ wins: p1Wins });
+      database.ref('players/p2').update({ losses: p2Losses });
+    } else if ((p1Choice === "paper") && (p2Choice === "rock")) {
+      p1Wins++;
+      p2Losses++;
+      database.ref('players/p1').update({ wins: p1Wins });
+      database.ref('players/p2').update({ losses: p2Losses });
+    } else if ((p1Choice === "paper") && (p2Choice === "scissors")) {
+      p1Losses++;
+      p2Wins++;
+      database.ref('players/p1').update({ losses: p1Losses });
+      database.ref('players/p2').update({ losses: p2Wins });
+    } else if (p1Choice === p2Choice) {
+      ties++;
+      database.ref('players/p1').update({ ties: ties });
+      database.ref('players/p2').update({ ties: ties });
+    }
+  }
 
-    //clones the item we clicked to append to the user circle
-    var choice = elem.cloneNode(true);
+  //sets user name, removes form on click
+  document.getElementById('submit-name').onclick = function(e) {
+    e.preventDefault();
 
-    //removes margin to keep centered in the circle
-    choice.style.margin = "0";
+    //only allows 2 users to be set
+    if (totalUsers < 2) {
 
-    //queries the db
-    database.ref('players').once('value')
-      .then( snapshot => {
+      //gets the value of the user name
+      var name = document.getElementById('user-name').value.trim();
 
-        //sets p1 choice by checking p1.name with sessionStorage.name
-        if (snapshot.child('p1').val().name === sessionStorage.name) {
+      //stores the name in session storage to help with unique DOM changes based on the stage of the game for the user
+      sessionStorage.name = name;
 
-          //appends the clone we made to the p1 circle
-          document.querySelector('.player-container-1').appendChild(choice);
+      //determines where to set user data
+      totalUsers++;
 
-          //gets the value of the choice we picked, either rock, paper, or scissors
-          p1Choice = choice.getAttribute('data-choice');
+      //sets total users to the db to sync between sessions
+      database.ref().update({users: totalUsers});
 
-          //sets the choice to the db for p1
-          database.ref('players/p1').update({ choice: p1Choice });
+      //sets p1 data
+      if (totalUsers === 1) {
+        //reveals waiting msg
+        waitingMsg.classList.remove('d-none');
 
-          //hides choices for p1.
-          choicesDiv.classList.add('d-none');
+        //adds user data to db
+        database.ref('players/p1').set({
+          name: name,
+          user: totalUsers,
+          wins: 0,
+          losses: 0,
+          ties: 0
+        });
+        
+      } else {
+        //reveals waiting msg
+        waitingMsg.classList.remove('d-none');
 
-          //shows waiting message
-          waitingMsg.classList.remove('d-none');
+        //sets p2 data
+        database.ref('players/p2').set({
+          name: name,
+          user: totalUsers,
+          wins: 0,
+          losses: 0,
+          ties: 0
+        });
+      }
+    }
 
-          database.ref('turn').set(2);
-
-          //if the first condition wasn't met, then it is player 2's choice
-        } else {
-
-          //appends to p2 circle
-          document.querySelector('.player-container-2').appendChild(choice);
-
-          //gets the value of the choice we picked, either rock, paper, or scissors
-          p2Choice = choice.getAttribute('data-choice');
-
-          //sets the choice to the db for p2
-          database.ref('players/p2').update({ choice: p2Choice });
-
-          //hides choices for p2.
-          choicesDiv.classList.add('d-none');
-
-          //hides waiting message
-          waitingMsg.classList.add('d-none');
-
-          //adjusts the current turn to 1, so that the events associated when turn is equal to one can be triggered
-          database.ref().child('turn').set(1);
-        }
-      });
+    //hides and removes value from form
+    document.getElementById('user-name').value = '';
+    document.querySelector('.form-container').classList.add('d-none');
   };
 
-  //checks which turn is active
-  database.ref('turn').on('value', function(snapshot) {
-    
-    // If the turn is equal to 1, then both players made a choice, and the round is over. reveals the opponents, and their choices
-    if (snapshot.val() === 1) {
-      
-      //This only happens on the p1 screen. adjusts appearance by checking the name in sessionStorage. Switches from 12 column layout to 4 column layout
-      if (sessionStorage.name === p1Name) {
+  //listens for when a new child to players is created
+  database.ref('players').on('child_added', function(snapshot) {
 
-        //hides waiting message
-        waitingMsg.classList.add('d-none');
+    //sets the total users for persistence. This is needed to update p2 node. Without this, when p2 tries to enter data, it would overwrite p1 data
+    totalUsers = snapshot.val().user;
 
-        //reveals p2, and adjusts display
-        p2Circle.classList.remove('d-none', 'col-md-12');
-        p2Circle.classList.add('col-md-4');
-        
-        //adjusts p1 display
-        p1Circle.classList.remove('col-md-12');
-        p1Circle.classList.add('col-md-4');
+    //stores the p1 and p2 node locally for each session for easy reference
+    if (snapshot.val().user === 1) {
+      p1Obj = snapshot.val();
 
-        //This only happens on the p2 screen. adjusts appearance by checking the name in sessionStorage. Switches from 12 column layout to 4 column layout
-      } else {
-        //reveals p2, and adjusts display
-        p1Circle.classList.remove('d-none', 'col-md-12');
-        p1Circle.classList.add('col-md-4');
+      //sets the name of p1
+      document.getElementById('p1').innerText = snapshot.val().name;
 
-        //adjusts p1 display
-        p2Circle.classList.remove('col-md-12');
-        p2Circle.classList.add('col-md-4');
+      //reveals p1 by determining the p1 from sessionStorage
+      if (sessionStorage.name === p1Obj.name) {
+        p1Circle.classList.remove('d-none')
+      }
+    } else {
+      p2Obj = snapshot.val();
+
+      //sets the name of p2
+      document.getElementById('p2').innerText = snapshot.val().name;
+
+      //reveals p2 by determining the p2 from sessionStorage
+      if (sessionStorage.name === p2Obj.name) {
+        p2Circle.classList.remove('d-none')
       }
 
-      //reveals results for both players
-      document.querySelector('.results').classList.remove('d-none');
+      //p1 and p2 have already been set, which means it is now p1's turn
+      database.ref().update({ turn: 1 });
     }
+  });
 
-    //reveals choices for p2 when it is their turn
-    if (snapshot.val() === 2 && sessionStorage.name === p2Name) {
-      choicesDiv.classList.remove('d-none');
-
-      //hides waiting message
-      waitingMsg.classList.add('d-none');
-    }  
-  }, function(error) {});
-
-  //Creates a click event for each choice using the function declared above
-  for (i = 0; i < choices.length; i++) {
-    choices[i].onclick = function () { addChoice(this) };
-  }
-////////////////////////////////////////////////////////////////////////////////
-  //checks the choices of each player
+  //listens for updates to the p1 and p2 nodes to sync the data for persistence in each session
   database.ref('players').on('child_changed', function(snapshot) {
 
-    //checks if a choice has been set for a user
-    if (snapshot.val().choice) {
-
-      //sets each choice for persistance for each user
-      if (snapshot.val().user === 1) {
-        p1Choice = snapshot.val().choice;
-      } else {
-        p2Choice = snapshot.val().choice;
-      }
+    //stores updates to the p1 and p2 node locally for each session for easy reference
+    if (snapshot.val().user === 1) {
+      p1Obj = snapshot.val();
+    } else {
+      p2Obj = snapshot.val();
     }
+  });
 
-  })
+  //listens for an update to the current turn
+  database.ref('turn').on('value', function(snapshot) {
 
-
-  //sets each player name, and which user they are. either user 1 or 2
-  var setName = function() {
-
-    //stores the value of the user name
-    var currentName = document.getElementById('user-name').value.trim();
-
-    //for persistence, this will get added to the db, and will then get set with that info
-    numberOfUsers++;
-
-    //sets player 1
-    if (numberOfUsers === 1) {
-
-      //stores player 1 in the db by specifying the path. Calls set at that path to define our key/value pairs
-      var playersChild1 = database.ref('players/p1');
-      playersChild1.set({
-        name: currentName,
-        user: numberOfUsers,
-      });
-
-      // adds item to local storage to adjust p1 display
-      sessionStorage.setItem('name', currentName);
-      if (sessionStorage.length === 1) {
-        //reveals waiting for opponent
-        waitingMsg.classList.remove('d-none');
-        //hides form
-        document.querySelector('.form-container').classList.add('d-none');
-        //reveals p1 circle
+    //if the turn is 1
+    if (snapshot.val() === 1) {
+      //and the p1 name is the same as sessionStorage.name
+      if (sessionStorage.name === p1Obj.name) {
+        //then we adjust the screen for p1 to hide waiting msg
+        waitingMsg.classList.add('d-none');
+        //display the p1 circle
         p1Circle.classList.remove('d-none');
+        //and display the choices
+        choicesDiv.classList.remove('d-none');
       }
-    }
-
-    //sets player 2
-    if (numberOfUsers === 2) {
-      //stores player 2 in the db by specifying the path. Calls set at that path to define our key/value pairs
-      var playersChild2 = database.ref('players/p2');
-      playersChild2.set({
-        name: currentName,
-        user: numberOfUsers,
-      });
-
-      // sets p2 display after submitting name
-      sessionStorage.setItem('name', p2Name);
-      if (sessionStorage.length === 1) {
-
-        //reveals waiting for opponent
-        waitingMsg.classList.remove('d-none');
-
-        //hides form
-        document.querySelector('.form-container').classList.add('d-none');
-
-        //reveals p2 circle
+    } 
+    //if the turn is 2
+    if (snapshot.val() === 2) {
+      //and the p2 name is the same as sessionStorage.name
+      if (sessionStorage.name === p2Obj.name) {
+        //then we adjust the screen for p2 to hide waiting msg
+        waitingMsg.classList.add('d-none');
+        //display the p2 circle
         p2Circle.classList.remove('d-none');
-      }
-    }
-
-    //clears user input
-    document.getElementById('user-name').value = '';
-  }
-
-  //sets the names of each player
-  document.getElementById('submit-name').onclick = function(e) { 
-    e.preventDefault(); 
-    setName(); 
-  }
-
-  //listens for new children on the 'players' node to set the player names
-  database.ref('players').on("child_added", function (childSnapshot) {
-
-    //sets player 1 name
-    if (childSnapshot.val().user === 1) {
-
-      //updates variables for persistance
-      numberOfUsers = childSnapshot.val().user;
-
-      //pulls name out for persistance
-      p1Name = childSnapshot.val().name;
-
-      //updates page with user1 name
-      document.getElementById('p1').innerText = childSnapshot.val().name;
-    }
-
-    //sets player 2 name
-    if (childSnapshot.val().user === 2) {
-
-      //updates variables for persistance
-      numberOfUsers = childSnapshot.val().user;
-
-      //updates page with user1 name
-      document.getElementById('p2').innerText = childSnapshot.val().name;
-
-      //pulls name out for persistance
-      p2Name = childSnapshot.val().name;
-
-      //sets the opponent for each player.
-      database.ref('players/p1').update({opponent: p2Name});
-      database.ref('players/p2').update({opponent: p1Name});
-
-      //removes waiting message for p1
-      waitingMsg.classList.add('d-none');
-
-      //reveals p1 choices somehow...
-      if (sessionStorage.length === 1) {
+        //and display the choices
         choicesDiv.classList.remove('d-none');
       }
     }
-    }, function(error) {});
+
+    //stores the turn for persistence so we don't have to reference the db for the value again
+    turn = snapshot.val();
+  });
+
+  //var elem = document.querySelector(`[data-choice='${userChoice}']`);
+
+  var setChoice = function(elem) {
+    
+    //clones the item we clicked to append to the user circle
+    var choice = elem.cloneNode(true);
+
+    //if the turn is 1
+    if (turn === 1) {
+      //update the p1 choice in the db
+      database.ref('players/p1').update({ choice: choice.getAttribute('data-choice') });
+      //reveal waiting msg
+      waitingMsg.classList.remove('d-none');
+      //update the turn to 2 in the db
+      database.ref('turn').set(2);
+      //hide the choices from p1
+      choicesDiv.classList.add('d-none');
+
+      //if the turn is 2
+    } else {
+      //update p2 choice in the db
+      database.ref('players/p2').update({ choice: choice.getAttribute('data-choice') });
+      //update the turn to 0 in the db, signaling that the round is over
+      database.ref('turn').set(0);
+      //hide the choices from p2
+      choicesDiv.classList.add('d-none');
+      //checks results
+      rps(p1Obj.choice, p2Obj.choice)
+    }
+  }
+
+  //listens for an update to choice on the p1 and p2 node
+  database.ref('players').orderByChild('choice').on('child_changed', function(snapshot) {
+    //when the choice is updated for either player, get the choice from the db, and select the choice by its data-choice attribute
+    var elem = document.querySelector(`[data-choice='${snapshot.val().choice}']`);
+    //clone the selected DOM element
+    var elemClone = elem.cloneNode(true);
+    //adjust the style to be centered when appended to the player circle
+    elemClone.style.margin = "0";
+
+    if (turn === 1) {
+      //appends the fa-icon to the p1 circle for both users
+      document.querySelector('.player-container-1').appendChild(elemClone);
+    } else if (turn === 2) {
+      //appends the fa-icon to the p2 circle for both users
+      document.querySelector('.player-container-2').appendChild(elemClone);
+      //hides waiting msg for both users
+      waitingMsg.classList.add('d-none');
+
+      //reveals opponent and winner
+      p1Circle.classList.remove('d-none', 'col-md-12');
+      p2Circle.classList.remove('d-none', 'col-md-12');
+      resultsDiv.classList.remove('d-none', 'col-md-12');
+      //adjusts column display
+      p1Circle.classList.add('col-md-4');
+      p2Circle.classList.add('col-md-4');
+      resultsDiv.classList.add('col-md-4');
+    }
+  });
+
+  // database.ref('turn').on('value', function(snapshot) {
+  //   if (snapshot.val() === 0) {
+  //     // console.log(p1Obj.choice, p2Obj.choice)
+  //     rps(p1Obj.choice, p2Obj.choice)
+  //   }
+  // })
+
+  //Creates a click event for each fa icon 
+  for (i = 0; i < faIcons.length; i++) {
+    faIcons[i].onclick = function () { setChoice(this) };
+  }
 
   //clears the database on disconnect
   database.ref().set(false);
-
-}
+};
