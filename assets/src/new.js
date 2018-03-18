@@ -180,6 +180,8 @@ window.onload = function() {
     } else {
       //update p2 choice in the db
       database.ref('players/p2').update({ choice: choice.getAttribute('data-choice') });
+      //update the turn to 0 in the db, signaling that the round is over
+      database.ref('turn').set(0);
       //hide the choices from p2
       choicesDiv.classList.add('d-none');
     }
@@ -200,6 +202,12 @@ window.onload = function() {
     } else {
       //appends to the p2 circle for both users
       document.querySelector('.player-container-2').appendChild(elemClone);
+      //hides waiting msg for both users
+      waitingMsg.classList.add('d-none');
+
+      p1Circle.classList.remove('d-none');
+      p2Circle.classList.remove('d-none');
+      resultsDiv.classList.remove('d-none');
     }
   });
 
