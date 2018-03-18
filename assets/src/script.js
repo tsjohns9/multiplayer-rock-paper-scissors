@@ -21,11 +21,14 @@ window.onload = function() {
   var p2Choice;
   var numberOfUsers = 0;
 
+  var p1Obj;
+  var p2Obj;
+
   //selects h2 that reveals waiting message
   var waitingMsg = document.querySelector('.waiting-for-opponent-h2');
 
   //selects choices container
-  var choicesDiv = document.querySelector('.choices-container')
+  var choicesDiv = document.querySelector('.choices-container');
 
   //used to create click event for each choice
   var choices = document.getElementsByClassName('fa');
@@ -46,7 +49,7 @@ window.onload = function() {
 
     //queries the db
     database.ref('players').once('value')
-      .then((snapshot) => {
+      .then( snapshot => {
 
         //sets p1 choice by checking p1.name with sessionStorage.name
         if (snapshot.child('p1').val().name === sessionStorage.name) {
@@ -58,7 +61,7 @@ window.onload = function() {
           p1Choice = choice.getAttribute('data-choice');
 
           //sets the choice to the db for p1
-          database.ref('players/p1').update({ choice: p1Choice});
+          database.ref('players/p1').update({ choice: p1Choice });
 
           //hides choices for p1.
           choicesDiv.classList.add('d-none');
@@ -71,8 +74,6 @@ window.onload = function() {
           //if the first condition wasn't met, then it is player 2's choice
         } else {
 
-          // database.ref('turn').set(1);
-
           //appends to p2 circle
           document.querySelector('.player-container-2').appendChild(choice);
 
@@ -80,7 +81,7 @@ window.onload = function() {
           p2Choice = choice.getAttribute('data-choice');
 
           //sets the choice to the db for p2
-          database.ref('players/p2').update({ choice: p2Choice })
+          database.ref('players/p2').update({ choice: p2Choice });
 
           //hides choices for p2.
           choicesDiv.classList.add('d-none');
@@ -88,8 +89,8 @@ window.onload = function() {
           //hides waiting message
           waitingMsg.classList.add('d-none');
 
-          database.ref().child('turn').set(1)
-
+          //adjusts the current turn to 1, so that the events associated when turn is equal to one can be triggered
+          database.ref().child('turn').set(1);
         }
       });
   };
@@ -97,11 +98,13 @@ window.onload = function() {
   //checks which turn is active
   database.ref('turn').on('value', function(snapshot) {
     
-    // If the turn is equal to 1, then both players made a choice, and the round is over. reveals the opponents
+    // If the turn is equal to 1, then both players made a choice, and the round is over. reveals the opponents, and their choices
     if (snapshot.val() === 1) {
-
-      //adjusts screen for p1 by checking the name in sessionStorage. Switches from 12 column layout to 4 column layout
+      
+      //This only happens on the p1 screen. adjusts appearance by checking the name in sessionStorage. Switches from 12 column layout to 4 column layout
       if (sessionStorage.name === p1Name) {
+
+        //hides waiting message
         waitingMsg.classList.add('d-none');
 
         //reveals p2, and adjusts display
@@ -111,6 +114,8 @@ window.onload = function() {
         //adjusts p1 display
         p1Circle.classList.remove('col-md-12');
         p1Circle.classList.add('col-md-4');
+
+        //This only happens on the p2 screen. adjusts appearance by checking the name in sessionStorage. Switches from 12 column layout to 4 column layout
       } else {
         //reveals p2, and adjusts display
         p1Circle.classList.remove('d-none', 'col-md-12');
@@ -122,27 +127,39 @@ window.onload = function() {
       }
 
       //reveals results for both players
-      document.querySelector('.results').classList.remove('d-none')
-
+      document.querySelector('.results').classList.remove('d-none');
     }
 
     //reveals choices for p2 when it is their turn
     if (snapshot.val() === 2 && sessionStorage.name === p2Name) {
-      console.log('hi')
       choicesDiv.classList.remove('d-none');
-      
+
       //hides waiting message
       waitingMsg.classList.add('d-none');
+    }  
+  }, function(error) {});
 
+  //Creates a click event for each choice using the function declared above
+  for (i = 0; i < choices.length; i++) {
+    choices[i].onclick = function () { addChoice(this) };
+  }
+////////////////////////////////////////////////////////////////////////////////
+  //checks the choices of each player
+  database.ref('players').on('child_changed', function(snapshot) {
+
+    //checks if a choice has been set for a user
+    if (snapshot.val().choice) {
+
+      //sets each choice for persistance for each user
+      if (snapshot.val().user === 1) {
+        p1Choice = snapshot.val().choice;
+      } else {
+        p2Choice = snapshot.val().choice;
+      }
     }
 
-    
-  }, function(error) {})
+  })
 
-  //will create a click event for each choice using the function declared above
-  for (i = 0; i < choices.length; i++) {
-    choices[i].onclick = function () { addChoice(this) }
-  }
 
   //sets each player name, and which user they are. either user 1 or 2
   var setName = function() {
@@ -178,7 +195,7 @@ window.onload = function() {
     //sets player 2
     if (numberOfUsers === 2) {
       //stores player 2 in the db by specifying the path. Calls set at that path to define our key/value pairs
-      var playersChild2 = database.ref('players/p2')
+      var playersChild2 = database.ref('players/p2');
       playersChild2.set({
         name: currentName,
         user: numberOfUsers,
@@ -203,7 +220,7 @@ window.onload = function() {
     document.getElementById('user-name').value = '';
   }
 
-  //sets the names of each player by calling the function above
+  //sets the names of each player
   document.getElementById('submit-name').onclick = function(e) { 
     e.preventDefault(); 
     setName(); 
@@ -244,15 +261,11 @@ window.onload = function() {
       //removes waiting message for p1
       waitingMsg.classList.add('d-none');
 
-      //creates a new child off root for the current turn. Once p2 enters name, it is now p1 turn
-      // database.ref().child('turn').set(1)
-
       //reveals p1 choices somehow...
       if (sessionStorage.length === 1) {
         choicesDiv.classList.remove('d-none');
       }
     }
-
     }, function(error) {});
 
   //clears the database on disconnect
