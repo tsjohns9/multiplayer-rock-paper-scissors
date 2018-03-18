@@ -35,6 +35,7 @@ window.onload = function() {
   var resultsDiv = document.querySelector('.results');
   var choicesDiv = document.querySelector('.choices-container');
   var faIcons = document.getElementsByClassName('fa');
+  var displayResultsDiv = document.querySelector('.display-results');
 
   //determines results of the round
   function rps(p1Choice, p2Choice) {
@@ -43,35 +44,42 @@ window.onload = function() {
       p2Losses++;
       database.ref('players/p1').update({ wins: p1Wins });
       database.ref('players/p2').update({ losses: p2Losses });
+      displayResultsDiv.innerText = `${p1Obj.name} Won!`;
     } else if ((p1Choice === "rock") && (p2Choice === "paper")) {
       p1Losses++;
       p2Wins++;
       database.ref('players/p1').update({ losses: p1Losses });
-      database.ref('players/p2').update({ losses: p2Wins });
+      database.ref('players/p2').update({ wins: p2Wins });
+      displayResultsDiv.innerText = `${p2Obj.name} Won!`;
     } else if ((p1Choice === "scissors") && (p2Choice === "rock")) {
       p1Losses++;
       p2Wins++;
       database.ref('players/p1').update({ losses: p1Losses });
-      database.ref('players/p2').update({ losses: p2Wins });
+      database.ref('players/p2').update({ wins: p2Wins });
+      displayResultsDiv.innerText = `${p2Obj.name} Won!`;
     } else if ((p1Choice === "scissors") && (p2Choice === "paper")) {
       p1Wins++;
       p2Losses++;
       database.ref('players/p1').update({ wins: p1Wins });
       database.ref('players/p2').update({ losses: p2Losses });
+      displayResultsDiv.innerText = `${p1Obj.name} Won!`;
     } else if ((p1Choice === "paper") && (p2Choice === "rock")) {
       p1Wins++;
       p2Losses++;
       database.ref('players/p1').update({ wins: p1Wins });
       database.ref('players/p2').update({ losses: p2Losses });
+      displayResultsDiv.innerText = `${p1Obj.name} Won!`;
     } else if ((p1Choice === "paper") && (p2Choice === "scissors")) {
       p1Losses++;
       p2Wins++;
       database.ref('players/p1').update({ losses: p1Losses });
       database.ref('players/p2').update({ losses: p2Wins });
+      displayResultsDiv.innerText = `${p2Obj.name} Won!`;
     } else if (p1Choice === p2Choice) {
       ties++;
       database.ref('players/p1').update({ ties: ties });
       database.ref('players/p2').update({ ties: ties });
+      displayResultsDiv.innerText = `Tie Game`;
     }
   }
 
@@ -92,7 +100,7 @@ window.onload = function() {
       totalUsers++;
 
       //sets total users to the db to sync between sessions
-      database.ref().update({users: totalUsers});
+      database.ref().update({ users: totalUsers });
 
       //sets p1 data
       if (totalUsers === 1) {
@@ -109,10 +117,8 @@ window.onload = function() {
         });
         
       } else {
-        //reveals waiting msg
+        //reveals waiting msg and sets p2 data
         waitingMsg.classList.remove('d-none');
-
-        //sets p2 data
         database.ref('players/p2').set({
           name: name,
           user: totalUsers,
@@ -177,24 +183,32 @@ window.onload = function() {
 
     //if the turn is 1
     if (snapshot.val() === 1) {
+
       //and the p1 name is the same as sessionStorage.name
       if (sessionStorage.name === p1Obj.name) {
+
         //then we adjust the screen for p1 to hide waiting msg
         waitingMsg.classList.add('d-none');
+
         //display the p1 circle
         p1Circle.classList.remove('d-none');
+
         //and display the choices
         choicesDiv.classList.remove('d-none');
       }
     } 
     //if the turn is 2
     if (snapshot.val() === 2) {
+
       //and the p2 name is the same as sessionStorage.name
       if (sessionStorage.name === p2Obj.name) {
+
         //then we adjust the screen for p2 to hide waiting msg
         waitingMsg.classList.add('d-none');
+
         //display the p2 circle
         p2Circle.classList.remove('d-none');
+
         //and display the choices
         choicesDiv.classList.remove('d-none');
       }
@@ -204,8 +218,6 @@ window.onload = function() {
     turn = snapshot.val();
   });
 
-  //var elem = document.querySelector(`[data-choice='${userChoice}']`);
-
   var setChoice = function(elem) {
     
     //clones the item we clicked to append to the user circle
@@ -213,63 +225,118 @@ window.onload = function() {
 
     //if the turn is 1
     if (turn === 1) {
+
       //update the p1 choice in the db
       database.ref('players/p1').update({ choice: choice.getAttribute('data-choice') });
+
       //reveal waiting msg
       waitingMsg.classList.remove('d-none');
+
       //update the turn to 2 in the db
       database.ref('turn').set(2);
+
       //hide the choices from p1
       choicesDiv.classList.add('d-none');
 
       //if the turn is 2
     } else {
+
       //update p2 choice in the db
       database.ref('players/p2').update({ choice: choice.getAttribute('data-choice') });
+
       //update the turn to 0 in the db, signaling that the round is over
       database.ref('turn').set(0);
+
       //hide the choices from p2
       choicesDiv.classList.add('d-none');
-      //checks results
-      rps(p1Obj.choice, p2Obj.choice)
     }
   }
 
   //listens for an update to choice on the p1 and p2 node
   database.ref('players').orderByChild('choice').on('child_changed', function(snapshot) {
+
     //when the choice is updated for either player, get the choice from the db, and select the choice by its data-choice attribute
     var elem = document.querySelector(`[data-choice='${snapshot.val().choice}']`);
-    //clone the selected DOM element
-    var elemClone = elem.cloneNode(true);
-    //adjust the style to be centered when appended to the player circle
-    elemClone.style.margin = "0";
 
-    if (turn === 1) {
+    //only runs if the choice key exists. This is needed since choice gets reset at the end of the game
+    if (snapshot.val().choice) {
+
+      //clone the selected DOM element
+      var elemClone = elem.cloneNode(true);
+
+      //adjust the style to be centered when appended to the player circle
+      elemClone.style.margin = "0";
+
       //appends the fa-icon to the p1 circle for both users
-      document.querySelector('.player-container-1').appendChild(elemClone);
-    } else if (turn === 2) {
-      //appends the fa-icon to the p2 circle for both users
-      document.querySelector('.player-container-2').appendChild(elemClone);
-      //hides waiting msg for both users
-      waitingMsg.classList.add('d-none');
+      if (turn === 1) {
+        document.querySelector('.player-container-1').appendChild(elemClone);
 
-      //reveals opponent and winner
-      p1Circle.classList.remove('d-none', 'col-md-12');
-      p2Circle.classList.remove('d-none', 'col-md-12');
-      resultsDiv.classList.remove('d-none', 'col-md-12');
-      //adjusts column display
-      p1Circle.classList.add('col-md-4');
-      p2Circle.classList.add('col-md-4');
-      resultsDiv.classList.add('col-md-4');
+        //appends the fa-icon to the p2 circle for both users
+      } else if (turn === 2) {
+        document.querySelector('.player-container-2').appendChild(elemClone);
+
+        //hides waiting msg for both users
+        waitingMsg.classList.add('d-none');
+
+        //reveals opponent and winner
+        p1Circle.classList.remove('d-none', 'col-md-12');
+        p2Circle.classList.remove('d-none', 'col-md-12');
+        resultsDiv.classList.remove('d-none', 'col-md-12');
+
+        //adjusts column display
+        p1Circle.classList.add('col-md-4');
+        p2Circle.classList.add('col-md-4');
+        resultsDiv.classList.add('col-md-4');
+      }
     }
   });
 
-  // database.ref('turn').on('value', function(snapshot) {
-  //   if (snapshot.val() === 0) {
-  //     // console.log(p1Obj.choice, p2Obj.choice)
-  //     rps(p1Obj.choice, p2Obj.choice)
-  //   }
-  // })
+  //if the turn is 0, then the round is over and results are displayed
+  database.ref('turn').on('value', function(snapshot) {
+    if (snapshot.val() === 0) {
+      rps(p1Obj.choice, p2Obj.choice);
+
+      //next round begins automatically after 3 seconds.
+      setTimeout(() => {
+        
+        //sets the round to 1
+        database.ref('turn').set(1);
+
+        //removes previous choices for each player
+        database.ref('players/p1/choice').set(null);
+        database.ref('players/p2/choice').set(null);
+
+        // finds the fa-icon from the last round in each player circle. removes it from the circle
+        document.querySelector('.player-container-1').removeChild(p1Circle.querySelector('.fa'));
+        document.querySelector('.player-container-2').removeChild(p2Circle.querySelector('.fa'));
+
+        // hides choices and results
+        choicesDiv.classList.add('d-none');
+        resultsDiv.classList.add('d-none');
+
+        //adjusts column display
+        p1Circle.classList.remove('col-md-4');
+        p2Circle.classList.remove('col-md-4');
+        resultsDiv.classList.remove('col-md-4');
+
+        //reveals opponent and winner
+        p1Circle.classList.add('col-md-12');
+        p2Circle.classList.add('col-md-12');
+        resultsDiv.classList.add('col-md-12');
+
+        //removes p2 circle from p1 screen. reveals choices for p1
+        if (sessionStorage.name === p1Obj.name) {
+          p2Circle.classList.add('d-none');
+          choicesDiv.classList.remove('d-none');
+          
+          //removes p1 circle for p2 screen. shows waiting msg
+        } else {
+          p1Circle.classList.add('d-none');
+          waitingMsg.classList.remove('d-none')
+        }
+      }, 3000);
+    }
+  });
 
   //Creates a click event for each fa icon 
   for (i = 0; i < faIcons.length; i++) {
