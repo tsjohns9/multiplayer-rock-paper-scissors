@@ -394,25 +394,23 @@ window.onload = function() {
   database.ref('chat').on('child_added', function(snapshot) {
     var response = snapshot.val();
 
-    //only shows messages to active players
-    if (sessionStorage.name) {
-      //creates new elements to display the message
-      var nameElem = document.createElement('span');
-      var msgElem = document.createElement('span');
-      var newDiv = document.createElement('div');
+    //creates new elements to display the message
+    var nameElem = document.createElement('span');
+    var msgElem = document.createElement('span');
+    var newDiv = document.createElement('div');
 
-      //styles the name and msg, then adds the content
-      nameElem.classList.add('d-block', 'text-muted');
-      msgElem.classList.add('d-block');
-      nameElem.textContent = response.name;
-      msgElem.textContent = response.msg;
-      
-      //appends name and msg to newDiv, which gets appended to the chat display
-      newDiv.appendChild(nameElem);
-      newDiv.appendChild(msgElem);
-      newDiv.classList.add('p-2');
-      document.querySelector('.chat-msgs').appendChild(newDiv);
-    }
+    //styles the name and msg, then adds the content
+    nameElem.classList.add('d-block', 'text-muted');
+    msgElem.classList.add('d-block');
+    nameElem.textContent = response.name;
+    msgElem.textContent = response.msg;
+
+    
+    //appends name and msg to newDiv, which gets appended to the chat display
+    newDiv.appendChild(nameElem);
+    newDiv.appendChild(msgElem);
+    newDiv.classList.add('p-2');
+    document.querySelector('.chat-msgs').appendChild(newDiv);
   });
 
   //clears the database on disconnect
