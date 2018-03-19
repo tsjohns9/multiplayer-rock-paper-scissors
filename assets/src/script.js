@@ -26,12 +26,13 @@ window.onload = function() {
   var p1Losses = 0;
   var p2Wins = 0;
   var p2Losses = 0;
-  var ties = 0;
 
   //selects elements from the DOM for easy access
   var waitingMsg = document.querySelector('.waiting-for-opponent-h2');
   var p1Circle = document.querySelector('.p1-container');
   var p2Circle = document.querySelector('.p2-container');
+  var p1Container = document.querySelector('.player-container-1');
+  var p2Container = document.querySelector('.player-container-2');
   var resultsDiv = document.querySelector('.results');
   var choicesDiv = document.querySelector('.choices-container');
   var faIcons = document.getElementsByClassName('fa');
@@ -45,41 +46,52 @@ window.onload = function() {
       p2Losses++;
       database.ref('players/p1').update({ wins: p1Wins });
       database.ref('players/p2').update({ losses: p2Losses });
+      p1Container.setAttribute('style', "box-shadow: rgb(62, 201, 167) 0px 0px 25px 10px;");
+      p2Container.setAttribute('style', 'box-shadow: rgb(227, 43, 9) 0px 0px 25px 10px;');
       displayResultsDiv.innerText = `${p1Obj.name} Won!`;
     } else if ((p1Choice === "rock") && (p2Choice === "paper")) {
       p1Losses++;
       p2Wins++;
       database.ref('players/p1').update({ losses: p1Losses });
       database.ref('players/p2').update({ wins: p2Wins });
+      p1Container.setAttribute('style', "box-shadow: rgb(227, 43, 9) 0px 0px 25px 10px;");
+      p2Container.setAttribute('style', 'box-shadow: rgb(62, 201, 167) 0px 0px 25px 10px;');
       displayResultsDiv.innerText = `${p2Obj.name} Won!`;
     } else if ((p1Choice === "scissors") && (p2Choice === "rock")) {
       p1Losses++;
       p2Wins++;
       database.ref('players/p1').update({ losses: p1Losses });
       database.ref('players/p2').update({ wins: p2Wins });
+      p1Container.setAttribute('style', "box-shadow: rgb(227, 43, 9) 0px 0px 25px 10px;");
+      p2Container.setAttribute('style', 'box-shadow: rgb(62, 201, 167) 0px 0px 25px 10px;');
       displayResultsDiv.innerText = `${p2Obj.name} Won!`;
     } else if ((p1Choice === "scissors") && (p2Choice === "paper")) {
       p1Wins++;
       p2Losses++;
       database.ref('players/p1').update({ wins: p1Wins });
       database.ref('players/p2').update({ losses: p2Losses });
+      p1Container.setAttribute('style', "box-shadow: rgb(62, 201, 167) 0px 0px 25px 10px;");
+      p2Container.setAttribute('style', 'box-shadow: rgb(227, 43, 9) 0px 0px 25px 10px;');
       displayResultsDiv.innerText = `${p1Obj.name} Won!`;
     } else if ((p1Choice === "paper") && (p2Choice === "rock")) {
       p1Wins++;
       p2Losses++;
       database.ref('players/p1').update({ wins: p1Wins });
       database.ref('players/p2').update({ losses: p2Losses });
+      p1Container.setAttribute('style', "box-shadow: rgb(62, 201, 167) 0px 0px 25px 10px;");
+      p2Container.setAttribute('style', 'box-shadow: rgb(227, 43, 9) 0px 0px 25px 10px;');
       displayResultsDiv.innerText = `${p1Obj.name} Won!`;
     } else if ((p1Choice === "paper") && (p2Choice === "scissors")) {
       p1Losses++;
       p2Wins++;
       database.ref('players/p1').update({ losses: p1Losses });
-      database.ref('players/p2').update({ losses: p2Wins });
+      database.ref('players/p2').update({ wins: p2Wins });
+      p1Container.setAttribute('style', "box-shadow: rgb(227, 43, 9) 0px 0px 25px 10px;");
+      p2Container.setAttribute('style', 'box-shadow: rgb(62, 201, 167) 0px 0px 25px 10px;');
       displayResultsDiv.innerText = `${p2Obj.name} Won!`;
     } else if (p1Choice === p2Choice) {
-      ties++;
-      database.ref('players/p1').update({ ties: ties });
-      database.ref('players/p2').update({ ties: ties });
+      p1Container.setAttribute('style', "box-shadow: rgb(242, 232, 196) 0px 0px 25px 10px;");
+      p2Container.setAttribute('style', 'box-shadow: rgb(242, 232, 196) 0px 0px 25px 10px;');
       displayResultsDiv.innerText = `Tie Game`;
     }
 
@@ -126,6 +138,7 @@ window.onload = function() {
       } else {
         //reveals waiting msg and sets p2 data
         waitingMsg.classList.remove('d-none');
+        waitingMsg.innerText = `Waiting for ${p1Obj.name}`;
         database.ref('players/p2').set({
           name: name,
           user: totalUsers,
@@ -137,11 +150,11 @@ window.onload = function() {
 
       //allows the send message button to be pressed once the name is set, since a name is needed to send a message
       sendMsgBtn.disabled = false;
-    }
 
-    //hides and removes value from form
-    document.getElementById('user-name').value = '';
-    document.querySelector('.form-container').classList.add('d-none');
+      //hides and removes value from form
+      document.getElementById('user-name').value = '';
+      document.querySelector('.form-container').classList.add('d-none');
+    } 
   };
 
   //listens for when a new child to players is created
@@ -228,6 +241,7 @@ window.onload = function() {
     turn = snapshot.val();
   });
 
+  //function for click event when selecting a choice
   var setChoice = function(elem) {
     
     //clones the item we clicked to append to the user circle
@@ -241,6 +255,7 @@ window.onload = function() {
 
       //reveal waiting msg
       waitingMsg.classList.remove('d-none');
+      waitingMsg.innerText = `Waiting for ${p2Obj.name}`;
 
       //update the turn to 2 in the db
       database.ref('turn').set(2);
@@ -329,10 +344,14 @@ window.onload = function() {
         p2Circle.classList.remove('col-md-4');
         resultsDiv.classList.remove('col-md-4');
 
-        //reveals opponent and winner
+        //switches column layout
         p1Circle.classList.add('col-md-12');
         p2Circle.classList.add('col-md-12');
         resultsDiv.classList.add('col-md-12');
+
+        //removes border
+        p1Container.removeAttribute('style');
+        p2Container.removeAttribute('style');
 
         //removes p2 circle from p1 screen. reveals choices for p1
         if (sessionStorage.name === p1Obj.name) {
@@ -368,9 +387,8 @@ window.onload = function() {
     
     newDiv.appendChild(nameElem);
     newDiv.appendChild(msgElem);
-    console.log(newDiv)
     newDiv.classList.add('p-2');
-    document.querySelector('.chat-msgs').appendChild(newDiv);  
+    document.querySelector('.chat-msgs').appendChild(newDiv);
   });
 
   //Creates a click event for each fa icon 
@@ -380,4 +398,6 @@ window.onload = function() {
 
   //clears the database on disconnect
   database.ref().set(false);
+
+  // database.ref('players/p1').onDisconnect().remove();
 };

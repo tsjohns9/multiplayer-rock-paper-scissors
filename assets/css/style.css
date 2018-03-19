@@ -2,8 +2,9 @@
   box-sizing: border-box;
 }
 
-html,body {
-  height: 100%;
+body {
+  background-color: black;
+  color: white;
 }
 
 h4 {
@@ -21,6 +22,9 @@ p {
   width: 185px;
   margin: 0 auto;
   padding: 20px 0;
+  overflow: hidden;
+  background-color: white;
+  color: black;
 }
 
 .choices {
@@ -40,8 +44,26 @@ p {
 .chat-msgs {
   height: 200px;
   overflow-y: auto;
+  background-color: white;
+  color: black !important;
 }
 
 .stick-chat-to-bottom {
   min-height: calc(100vh - 300px);
+}
+
+.p1-msg {
+  background-color: #edf9ff;
+}
+
+.red-border {
+  box-shadow: rgb(227, 43, 9) 0px 0px 25px 10px;
+}
+
+.green-border {
+  box-shadow: rgb(62, 201, 167) 0px 0px 25px 10px;
+}
+
+.white-border {
+  box-shadow: rgb(242, 232, 196) 0px 0px 25px 10px;
 }

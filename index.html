@@ -13,14 +13,14 @@
 <body>
   <div class="stick-chat-to-bottom">
   <h1 class="mb-4 text-center">Rock, Paper, Scissors</h1>
-  <h2 class="waiting-for-opponent-h2 text-center d-none">Waiting For Opponent...</h2>
+  <h2 class="waiting-for-opponent-h2 mb-3 text-center d-none">Waiting For Opponent...</h2>
 
   <div class="container form-container mb-4 text-center">
     <form class=" mx-auto w-50">
       <div class="form-group">
         <input type="text" class="form-control text-center" id="user-name" placeholder="Enter Name">
       </div>
-      <button type="submit" class="btn btn-primary w-100" id="submit-name">Submit</button>
+      <button type="submit" class="btn btn-light w-100" id="submit-name">Submit</button>
     </form>
   </div>
 
@@ -29,7 +29,7 @@
     <div class="row text-center">
 
       <div class="col-md-12 mb-4 p1-container d-none">
-        <div class="player-container-1 border border-success mb-3 mb-md-0 rounded-circle">
+        <div class="player-container-1 mb-3 mb-md-0 rounded-circle">
           <h4 class="mb-0" id="p1"></h4>
           <p class="mb-0">Wins: <span id="p1-wins">0</span></p>
           <p class="mb-2">Losses: <span id="p1-loss">0</span></p>
@@ -40,8 +40,8 @@
         <h3 class="display-results">Winner!</h3>
       </div>
 
-      <div class="col-md-12 p2-container d-none">
-        <div class="player-container-2 border border-success mb-3 mb-md-0 rounded-circle">
+      <div class="col-md-12 mb-4 p2-container d-none">
+        <div class="player-container-2 mb-3 mb-md-0 rounded-circle">
           <h4 class="mb-0" id="p2"></h4>
           <p class="mb-0">Wins: <span id="p2-wins">0</span></p>
           <p class="mb-2">Losses: <span id="p2-loss">0</span></p>
@@ -60,12 +60,12 @@
   </div>
 
   <div class="chat-container container w-50 mx-auto">
-    <div class="chat-msgs border border-primary mb-3"></div>
+    <div class="chat-msgs border border-primary rounded mb-3"></div>
     <form class="form-inline">
       <div class="form-group mr-sm-3 mb-2">
         <input type="text" class="form-control" id="type-msg" placeholder="Message">
       </div>
-      <button type="submit" class="btn btn-primary mb-2" id="submit-msg" disabled>Send Message</button>
+      <button type="submit" class="btn btn-light mb-2" id="submit-msg" disabled>Send Message</button>
     </form>
   </div> <!-- End chat-container -->
   
