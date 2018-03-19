@@ -11,12 +11,16 @@ h4 {
   font-size: 20px;
 }
 
+p {
+  margin: 0;
+}
+
 .player-container-1,
 .player-container-2 {
-  height: 175px;
-  width: 175px;
+  height: 185px;
+  width: 185px;
   margin: 0 auto;
-  padding: 55px 0;
+  padding: 20px 0;
 }
 
 .choices {
@@ -25,10 +29,19 @@ h4 {
 
 .fa {
   cursor: pointer;
-  font-size: 75px;
+  font-size: 65px;
   margin-right: 40px;
 }
 
 .fa-hand-scissors-o {
   margin-right: 0;
+}
+
+.chat-msgs {
+  height: 200px;
+  overflow-y: auto;
+}
+
+.stick-chat-to-bottom {
+  min-height: calc(100vh - 300px);
 }

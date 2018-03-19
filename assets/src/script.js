@@ -36,6 +36,7 @@ window.onload = function() {
   var choicesDiv = document.querySelector('.choices-container');
   var faIcons = document.getElementsByClassName('fa');
   var displayResultsDiv = document.querySelector('.display-results');
+  var sendMsgBtn = document.getElementById('submit-msg');
 
   //determines results of the round
   function rps(p1Choice, p2Choice) {
@@ -81,6 +82,12 @@ window.onload = function() {
       database.ref('players/p2').update({ ties: ties });
       displayResultsDiv.innerText = `Tie Game`;
     }
+
+    //updates screen with wins/loss
+    document.getElementById('p1-wins').textContent = p1Obj.wins;
+    document.getElementById('p1-loss').textContent = p1Obj.losses;
+    document.getElementById('p2-wins').textContent = p2Obj.wins;
+    document.getElementById('p2-loss').textContent = p2Obj.losses;
   }
 
   //sets user name, removes form on click
@@ -127,6 +134,9 @@ window.onload = function() {
           ties: 0
         });
       }
+
+      //allows the send message button to be pressed once the name is set, since a name is needed to send a message
+      sendMsgBtn.disabled = false;
     }
 
     //hides and removes value from form
@@ -298,7 +308,7 @@ window.onload = function() {
 
       //next round begins automatically after 3 seconds.
       setTimeout(() => {
-        
+
         //sets the round to 1
         database.ref('turn').set(1);
 
@@ -336,6 +346,31 @@ window.onload = function() {
         }
       }, 3000);
     }
+  });
+
+  //sends the message to the database
+  sendMsgBtn.onclick = function(e) {
+    e.preventDefault();
+    var msg = document.getElementById('type-msg').value.trim();
+    var name = sessionStorage.name;
+    database.ref('chat').push({ name: name, msg: msg});
+    document.getElementById('type-msg').value = '';
+  };
+
+  database.ref('chat').on('child_added', function(snapshot) {
+    var response = snapshot.val();
+    var nameElem = document.createElement('b');
+    var msgElem = document.createElement('p');
+    var newDiv = document.createElement('div');
+
+    nameElem.textContent = response.name;
+    msgElem.textContent = response.msg;
+    
+    newDiv.appendChild(nameElem);
+    newDiv.appendChild(msgElem);
+    console.log(newDiv)
+    newDiv.classList.add('p-2');
+    document.querySelector('.chat-msgs').appendChild(newDiv);  
   });
 
   //Creates a click event for each fa icon 
