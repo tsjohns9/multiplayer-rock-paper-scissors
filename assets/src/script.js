@@ -145,8 +145,6 @@ window.onload = function() {
       //hides and removes value from form
       document.getElementById('user-name').value = '';
       document.querySelector('.form-container').classList.add('d-none');
-    } else {
-      document.getElementById('user-name').value = 'Too Many Users!';
     }
   };
 
