@@ -13,7 +13,7 @@
 <body>
   <div class="stick-chat-to-bottom">
   <h1 class="mb-4 text-center">Rock, Paper, Scissors</h1>
-  <h2 class="waiting-for-opponent-h2 mb-3 text-center d-none">Waiting For Opponent...</h2>
+  <h2 class="waiting-for-opponent-h2 mb-4 text-center d-none">Waiting For Opponent...</h2>
 
   <div class="container form-container mb-4 text-center">
     <form class=" mx-auto w-50">
@@ -59,14 +59,15 @@
   </div> <!-- End players-container -->
   </div>
 
-  <div class="chat-container container w-50 mx-auto">
-    <div class="chat-msgs border border-primary rounded mb-3"></div>
-    <form class="form-inline">
-      <div class="form-group mr-sm-3 mb-2">
-        <input type="text" class="form-control" id="type-msg" placeholder="Message">
-      </div>
-      <button type="submit" class="btn btn-light mb-2" id="submit-msg" disabled>Send Message</button>
-    </form>
+  <div class="chat-container container mx-auto">
+    <h2 class="text-center bg-primary p-2 mb-0 rounded-top text-white">Chat With...</h2>
+    <div class="chat-msgs">
+      <!-- span for name -->
+      <!-- span for msg -->
+    </div>
+    <div class="create-msg">
+      <textarea name="input" class="p-3 rounded-bottom" id="send-msg" cols="0" rows="1" disabled>Enter your name to send a message!</textarea>
+    </div>
   </div> <!-- End chat-container -->
   
   <script src="https://www.gstatic.com/firebasejs/4.11.0/firebase.js"></script>

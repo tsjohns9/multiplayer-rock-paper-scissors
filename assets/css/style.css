@@ -1,10 +1,11 @@
+/* Global Styles */
+
 * {
   box-sizing: border-box;
 }
 
 body {
-  background-color: black;
-  color: white;
+  background-color: #cccccc;
 }
 
 h4 {
@@ -16,6 +17,8 @@ p {
   margin: 0;
 }
 
+/* Player Circle Styles */
+
 .player-container-1,
 .player-container-2 {
   height: 185px;
@@ -25,7 +28,10 @@ p {
   overflow: hidden;
   background-color: white;
   color: black;
+  box-shadow: #0e83d1 0px 0px 25px 10px;
 }
+
+/* Player Choices */
 
 .choices {
   padding: 75px 0;
@@ -41,6 +47,21 @@ p {
   margin-right: 0;
 }
 
+/* Message Area */
+
+.chat-container {
+  width: 95%;
+}
+
+#send-msg {
+  width: 100%;
+  padding: 0;
+  height: 100%;
+  border: none;
+  border-top: 1px solid rgb(207, 207, 207);
+  resize: none;
+}
+
 .chat-msgs {
   height: 200px;
   overflow-y: auto;
@@ -49,21 +70,27 @@ p {
 }
 
 .stick-chat-to-bottom {
-  min-height: calc(100vh - 300px);
+  min-height: calc(100vh - 375px);
 }
 
 .p1-msg {
   background-color: #edf9ff;
 }
 
-.red-border {
-  box-shadow: rgb(227, 43, 9) 0px 0px 25px 10px;
+/* Media Queries */
+@media(min-width: 576px) {
+  .chat-container {
+    width: 75%;
+  }
 }
 
-.green-border {
-  box-shadow: rgb(62, 201, 167) 0px 0px 25px 10px;
-}
+@media(min-width: 768px) {
+  .chat-container {
+    width: 65%;
+  }
 
-.white-border {
-  box-shadow: rgb(242, 232, 196) 0px 0px 25px 10px;
+  @media(min-width: 992px) {
+  .chat-container {
+    width: 50%;
+  }
 }
