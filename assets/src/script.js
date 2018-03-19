@@ -37,65 +37,46 @@ window.onload = function() {
   var choicesDiv = document.querySelector('.choices-container');
   var faIcons = document.getElementsByClassName('fa');
   var displayResultsDiv = document.querySelector('.display-results');
-  var sendMsgBtn = document.getElementById('submit-msg');
+  var sendMsg = document.getElementById('send-msg');
 
-  //determines results of the round. styles each player circle based on results
-  function rps(p1Choice, p2Choice) {
+/**********************   RPS LOGIC   ************************************************/
+
+  //sets results for player wins
+  var setP1Wins = function() {
+    p1Wins++;
+    p2Losses++;
+    console.log(p1Wins, p1Losses, p2Wins, p2Losses)
+    database.ref('players/p1/wins').set(p1Wins);
+    database.ref('players/p2/losses').set(p2Losses);
+    p1Container.setAttribute('style', "box-shadow: rgb(62, 201, 167) 0px 0px 25px 10px;");
+    p2Container.setAttribute('style', 'box-shadow: rgb(227, 43, 9) 0px 0px 25px 10px;');
+    displayResultsDiv.innerText = `${p1Obj.name} Won!`;
+  }
+
+  var setP2Wins = function() {
+    p1Losses++;
+    p2Wins++;
+    console.log(p1Wins, p1Losses, p2Wins, p2Losses)
+    database.ref('players/p1/losses').set(p1Losses);
+    database.ref('players/p2/wins').set(p2Wins);
+    p1Container.setAttribute('style', "box-shadow: rgb(227, 43, 9) 0px 0px 25px 10px;");
+    p2Container.setAttribute('style', 'box-shadow: rgb(62, 201, 167) 0px 0px 25px 10px;');
+    displayResultsDiv.innerText = `${p2Obj.name} Won!`;
+  }
+
+  var rps = function(p1Choice, p2Choice) {
     if ((p1Choice === "rock") && (p2Choice === "scissors")) {
-      console.log(p1Wins, p1Losses, p2Wins, p2Losses)
-      p1Wins++;
-      p2Losses++;
-      console.log(p1Wins, p1Losses, p2Wins, p2Losses)
-      database.ref('players/p1/wins').set(p1Wins);
-      database.ref('players/p2/losses').set(p2Losses);
-      p1Container.setAttribute('style', "box-shadow: rgb(62, 201, 167) 0px 0px 25px 10px;");
-      p2Container.setAttribute('style', 'box-shadow: rgb(227, 43, 9) 0px 0px 25px 10px;');
-      displayResultsDiv.innerText = `${p1Obj.name} Won!`;
+      setP1Wins();
     } else if ((p1Choice === "rock") && (p2Choice === "paper")) {
-      p1Losses++;
-      p2Wins++;
-      console.log(p1Wins, p1Losses, p2Wins, p2Losses)
-      database.ref('players/p1/losses').set(p1Losses);
-      database.ref('players/p2/wins').set(p2Wins);
-      p1Container.setAttribute('style', "box-shadow: rgb(227, 43, 9) 0px 0px 25px 10px;");
-      p2Container.setAttribute('style', 'box-shadow: rgb(62, 201, 167) 0px 0px 25px 10px;');
-      displayResultsDiv.innerText = `${p2Obj.name} Won!`;
+      setP2Wins();
     } else if ((p1Choice === "scissors") && (p2Choice === "rock")) {
-      p1Losses++;
-      p2Wins++;
-      console.log(p1Wins, p1Losses, p2Wins, p2Losses)
-      database.ref('players/p1/losses').set(p1Losses);
-      database.ref('players/p2/wins').set(p2Wins);
-      p1Container.setAttribute('style', "box-shadow: rgb(227, 43, 9) 0px 0px 25px 10px;");
-      p2Container.setAttribute('style', 'box-shadow: rgb(62, 201, 167) 0px 0px 25px 10px;');
-      displayResultsDiv.innerText = `${p2Obj.name} Won!`;
+      setP2Wins();
     } else if ((p1Choice === "scissors") && (p2Choice === "paper")) {
-      p1Wins++;
-      p2Losses++;
-      console.log(p1Wins, p1Losses, p2Wins, p2Losses)
-      database.ref('players/p1/wins').set(p1Wins);
-      database.ref('players/p2/losses').set(p2Losses);
-      p1Container.setAttribute('style', "box-shadow: rgb(62, 201, 167) 0px 0px 25px 10px;");
-      p2Container.setAttribute('style', 'box-shadow: rgb(227, 43, 9) 0px 0px 25px 10px;');
-      displayResultsDiv.innerText = `${p1Obj.name} Won!`;
+      setP1Wins();
     } else if ((p1Choice === "paper") && (p2Choice === "rock")) {
-      p1Wins++;
-      p2Losses++;
-      console.log(p1Wins, p1Losses, p2Wins, p2Losses)
-      database.ref('players/p1/wins').set(p1Wins);
-      database.ref('players/p2/losses').set(p2Losses);
-      p1Container.setAttribute('style', "box-shadow: rgb(62, 201, 167) 0px 0px 25px 10px;");
-      p2Container.setAttribute('style', 'box-shadow: rgb(227, 43, 9) 0px 0px 25px 10px;');
-      displayResultsDiv.innerText = `${p1Obj.name} Won!`;
+      setP1Wins();
     } else if ((p1Choice === "paper") && (p2Choice === "scissors")) {
-      p1Losses++;
-      p2Wins++;
-      console.log(p1Wins, p1Losses, p2Wins, p2Losses)
-      database.ref('players/p1/losses').set(p1Losses);
-      database.ref('players/p2/wins').set(p2Wins);
-      p1Container.setAttribute('style', "box-shadow: rgb(227, 43, 9) 0px 0px 25px 10px;");
-      p2Container.setAttribute('style', 'box-shadow: rgb(62, 201, 167) 0px 0px 25px 10px;');
-      displayResultsDiv.innerText = `${p2Obj.name} Won!`;
+      setP2Wins();
     } else if (p1Choice === p2Choice) {
       p1Container.setAttribute('style', "box-shadow: rgb(242, 232, 196) 0px 0px 25px 10px;");
       p2Container.setAttribute('style', 'box-shadow: rgb(242, 232, 196) 0px 0px 25px 10px;');
@@ -109,6 +90,7 @@ window.onload = function() {
     document.getElementById('p2-loss').textContent = p2Obj.losses;
   }
 
+  /**********************   Submit btn for form   ************************************************/
   //sets user name, removes form on click
   document.getElementById('submit-name').onclick = function(e) {
     e.preventDefault();
@@ -120,8 +102,8 @@ window.onload = function() {
     if (totalUsers < 2 && name) {
 
       //if a valid name is selected, then a message can be sent. Removes default msg
-      document.getElementById('send-msg').disabled = false;
-      document.getElementById('send-msg').value = '';
+      sendMsg.disabled = false;
+      sendMsg.value = '';
 
       //stores the name in session storage to help with unique DOM changes based on the stage of the game for the user
       sessionStorage.name = name;
@@ -157,15 +139,15 @@ window.onload = function() {
         });
       }
 
-      //allows the send message button to be pressed once the name is set, since a name is needed to send a message
-      // sendMsgBtn.disabled = false;
-
       //hides and removes value from form
       document.getElementById('user-name').value = '';
       document.querySelector('.form-container').classList.add('d-none');
-    } 
+    } else {
+      document.getElementById('user-name').value = 'Too Many Users!';
+    }
   };
 
+  /**********************   Saves Each User to DB   ************************************************/
   //listens for when a new child to players is created
   database.ref('players').on('child_added', function(snapshot) {
 
@@ -199,6 +181,7 @@ window.onload = function() {
     }
   });
 
+  /**********************   Syncs Updates on the P1 and P2 Node   **********************************/
   //listens for updates to the p1 and p2 nodes to sync the data for persistence in each session
   database.ref('players').on('child_changed', function(snapshot) {
 
@@ -210,6 +193,7 @@ window.onload = function() {
     }
   });
 
+  /**********************   Events Based off turn   **********************************/
   //listens for an update to the current turn
   database.ref('turn').on('value', function(snapshot) {
 
@@ -250,6 +234,7 @@ window.onload = function() {
     turn = snapshot.val();
   });
 
+  /**********************   Click Event to Set player Choices   **********************************/
   //function for click event when selecting a choice
   var setChoice = function(elem) {
     
@@ -286,6 +271,12 @@ window.onload = function() {
     }
   }
 
+  //Creates a click event for each fa icon 
+  for (i = 0; i < faIcons.length; i++) {
+    faIcons[i].onclick = function () { setChoice(this) };
+  }
+
+  /**********************   Events based off of player choice   **********************************/
   //listens for an update to choice on the p1 and p2 node
   database.ref('players').orderByChild('choice').on('child_changed', function(snapshot) {
 
@@ -293,7 +284,8 @@ window.onload = function() {
     var elem = document.querySelector(`[data-choice='${snapshot.val().choice}']`);
 
     //only runs if the choice key exists. This is needed since choice gets reset at the end of the game
-    if (snapshot.val().choice) {
+    //by checking sessionStorage.name we hide everything from a user not involved in the game
+    if (snapshot.val().choice && sessionStorage.name) {
 
       //clone the selected DOM element
       var elemClone = elem.cloneNode(true);
@@ -325,9 +317,12 @@ window.onload = function() {
     }
   });
 
+  /**********************   Events for when the round is over   **********************************/
   //if the turn is 0, then the round is over and results are displayed
   database.ref('turn').on('value', function(snapshot) {
-    if (snapshot.val() === 0) {
+
+    //by checking sessionStorage.name we hide everything from a user not involved in the game
+    if (snapshot.val() === 0 && sessionStorage.name) {
       rps(p1Obj.choice, p2Obj.choice);
 
       //next round begins automatically after 3 seconds.
@@ -379,27 +374,8 @@ window.onload = function() {
 
   /********************************CHAT AREA****************************************************/
 
-  database.ref('chat').on('child_added', function(snapshot) {
-    var response = snapshot.val();
-    var nameElem = document.createElement('span');
-    var msgElem = document.createElement('span');
-    var newDiv = document.createElement('div');
-
-    //styles the name and msg, then adds the content
-    nameElem.classList.add('d-block', 'text-muted');
-    msgElem.classList.add('d-block');
-    nameElem.textContent = response.name;
-    msgElem.textContent = response.msg;
-    
-    //appends name and msg to newDiv, which gets appended to the chat display
-    newDiv.appendChild(nameElem);
-    newDiv.appendChild(msgElem);
-    newDiv.classList.add('p-2');
-    document.querySelector('.chat-msgs').appendChild(newDiv);
-  });
-
   //sends the message to the database. Created the textarea element as an input button to submit the message, and get the name when enter is pressed.
-  document.getElementById('send-msg').onkeyup = function(e) {
+  sendMsg.onkeyup = function (e) {
     if (e.keyCode === 13 && sessionStorage.name) {
       var msg = this.value;
       var name = sessionStorage.name;
@@ -408,13 +384,31 @@ window.onload = function() {
     }
   }
 
-  //Creates a click event for each fa icon 
-  for (i = 0; i < faIcons.length; i++) {
-    faIcons[i].onclick = function () { setChoice(this) };
-  }
+  // gets chat info back from db after the message is sent
+  database.ref('chat').on('child_added', function(snapshot) {
+    var response = snapshot.val();
+
+    //only shows messages to active players
+    if (sessionStorage.name) {
+      //creates new elements to display the message
+      var nameElem = document.createElement('span');
+      var msgElem = document.createElement('span');
+      var newDiv = document.createElement('div');
+
+      //styles the name and msg, then adds the content
+      nameElem.classList.add('d-block', 'text-muted');
+      msgElem.classList.add('d-block');
+      nameElem.textContent = response.name;
+      msgElem.textContent = response.msg;
+      
+      //appends name and msg to newDiv, which gets appended to the chat display
+      newDiv.appendChild(nameElem);
+      newDiv.appendChild(msgElem);
+      newDiv.classList.add('p-2');
+      document.querySelector('.chat-msgs').appendChild(newDiv);
+    }
+  });
 
   //clears the database on disconnect
   database.ref().set(false);
-
-  // database.ref('players/p1').onDisconnect().remove();
 };

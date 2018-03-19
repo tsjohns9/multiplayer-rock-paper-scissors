@@ -5,7 +5,7 @@
 }
 
 body {
-  background-color: #cccccc;
+  background-color: #fff7f7;
 }
 
 h4 {
@@ -70,7 +70,7 @@ p {
 }
 
 .stick-chat-to-bottom {
-  min-height: calc(100vh - 375px);
+  min-height: calc(100vh - 325px);
 }
 
 .p1-msg {
