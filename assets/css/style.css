@@ -8,6 +8,10 @@ body {
   background-color: #fff7f7;
 }
 
+h1,h2 {
+  font-size:25px;
+}
+
 h4 {
   margin: 0;
   font-size: 20px;
@@ -16,6 +20,7 @@ h4 {
 p {
   margin: 0;
 }
+
 
 /* Player Circle Styles */
 
@@ -49,7 +54,7 @@ p {
 
 /* Message Area */
 
-.chat-container {
+.chat-container, form {
   width: 95%;
 }
 
@@ -78,19 +83,23 @@ p {
 }
 
 /* Media Queries */
+
 @media(min-width: 576px) {
-  .chat-container {
+  .chat-container, form {
     width: 75%;
   }
 }
 
 @media(min-width: 768px) {
-  .chat-container {
+  .chat-container, form {
     width: 65%;
+  }
+  h1 {
+    font-size: 35px;
   }
 
   @media(min-width: 992px) {
-  .chat-container {
+  .chat-container, form {
     width: 50%;
   }
 }

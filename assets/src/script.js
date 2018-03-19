@@ -38,6 +38,7 @@ window.onload = function() {
   var faIcons = document.getElementsByClassName('fa');
   var displayResultsDiv = document.querySelector('.display-results');
   var sendMsg = document.getElementById('send-msg');
+  var chatWith = document.getElementById('chat-with');
 
 /**********************   RPS LOGIC   ************************************************/
 
@@ -128,9 +129,11 @@ window.onload = function() {
         });
         
       } else {
-        //reveals waiting msg and sets p2 data
+        //reveals waiting msg, sets p2 data, sets chat with name to display p1 name for p2 only
         waitingMsg.classList.remove('d-none');
         waitingMsg.innerText = `Waiting for ${p1Obj.name}`;
+        chatWith.innerText = `Chat With ${p1Obj.name}`;
+
         database.ref('players/p2').set({
           name: name,
           user: totalUsers,
@@ -167,6 +170,11 @@ window.onload = function() {
       }
     } else {
       p2Obj = snapshot.val();
+
+      //sets the Chat With name for p1 once p2 has entered the game
+      if (sessionStorage.name == p1Obj.name) {
+        chatWith.innerText = `Chat With ${p2Obj.name}`;
+      }
 
       //sets the name of p2
       document.getElementById('p2').innerText = snapshot.val().name;
