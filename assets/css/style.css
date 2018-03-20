@@ -101,7 +101,7 @@ p {
 
 @media(min-width: 768px) {
   .chat-container, form {
-    width: 65%;
+    width: 70%;
   }
   h1 {
     font-size: 35px;
@@ -110,6 +110,6 @@ p {
 
 @media(min-width: 992px) {
   .chat-container, form {
-    width: 50%;
+    width: 55%;
   }
 }

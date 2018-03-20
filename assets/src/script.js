@@ -185,6 +185,8 @@ window.onload = function() {
       //p1 and p2 have already been set, which means it is now p1's turn
       database.ref().update({ turn: 1 });
     }
+  }, function (errorObject) {
+    console.log("The read failed: " + errorObject.code);
   });
 
   /**********************   Syncs Updates on the P1 and P2 Node   **********************************/
@@ -197,6 +199,8 @@ window.onload = function() {
     } else {
       p2Obj = snapshot.val();
     }
+  }, function (errorObject) {
+    console.log("The read failed: " + errorObject.code);
   });
 
   /**********************   Events Based off turn   **********************************/
@@ -235,9 +239,11 @@ window.onload = function() {
         choicesDiv.classList.remove('d-none');
       }
     }
-
     //stores the turn for persistence so we don't have to reference the db for the value again
     turn = snapshot.val();
+
+  }, function (errorObject) {
+    console.log("The read failed: " + errorObject.code);
   });
 
   /**********************   Click Event to Set player Choices   **********************************/
@@ -321,6 +327,8 @@ window.onload = function() {
         resultsDiv.classList.add('col-md-4');
       }
     }
+  }, function (errorObject) {
+    console.log("The read failed: " + errorObject.code);
   });
 
   /**********************   Events for when the round is over   **********************************/
@@ -375,8 +383,9 @@ window.onload = function() {
         }
       }, 3000);
     }
+  }, function (errorObject) {
+    console.log("The read failed: " + errorObject.code);
   });
-
 
   /********************************CHAT AREA****************************************************/
 
@@ -405,12 +414,17 @@ window.onload = function() {
     nameElem.textContent = response.name;
     msgElem.textContent = response.msg;
 
+    if (response.name === p1Obj.name) {
+      newDiv.setAttribute('style', 'background-color: #f4f4f4')
+    }
     
     //appends name and msg to newDiv, which gets appended to the chat display
     newDiv.appendChild(nameElem);
     newDiv.appendChild(msgElem);
     newDiv.classList.add('p-2');
     document.querySelector('.chat-msgs').appendChild(newDiv);
+  }, function (errorObject) {
+    console.log("The read failed: " + errorObject.code);
   });
 
   //clears the database on disconnect
